@@ -9,7 +9,6 @@ const authenticateUser = async ( data ) => {
         const fetchedUser = await User.findOne({
             username:username
         });
-        console.log(fetchedUser)
 
         if(!fetchedUser){
             throw Error("Invalid username entered")

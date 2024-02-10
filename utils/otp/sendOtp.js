@@ -12,7 +12,6 @@ const   sendOtp = async ({email , subject , message , duration = 0.25}) => {
             throw Error("Provide values for email,subject and messasge")
         };
 
-        console.log(!await User.findOne({email}));
         // checking if a user exists with the given email address
         if(!await User.findOne({email})){
             throw Error("Account with the given email address does not exist.")
