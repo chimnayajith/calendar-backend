@@ -1,16 +1,22 @@
-const OTP = require("../../models/otpModel")
+const OTP = require("../../models/otpModel");
+const User = require("../../models/userModel");
 const generateOtp = require("../otp/generateOtp");
 const sendEmail = require("./sendEmail");
 const {EMAIL_ADDRESS} = process.env;
 const { hashData} = require('../auth/hashPass');
 
-const sendOtp = async ({email , subject , message , duration = 0.25}) => {
+const   sendOtp = async ({email , subject , message , duration = 0.25}) => {
     try {
         // throws error in case of empty fields
         if(!(email && subject && message)){
             throw Error("Provide values for email,subject and messasge")
         };
 
+        console.log(!await User.findOne({email}));
+        // checking if a user exists with the given email address
+        if(!await User.findOne({email})){
+            throw Error("Account with the given email address does not exist.")
+        };
         // clears any existing record
         await OTP.deleteOne({email});
         
