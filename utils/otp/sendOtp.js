@@ -1,5 +1,8 @@
 const OTP = require("../../models/otpModel")
 const generateOtp = require("../otp/generateOtp");
+const sendEmail = require("./sendEmail");
+const {EMAIL_ADDRESS} = process.env;
+const { hashData} = require('../auth/hashPass');
 
 const sendOtp = async ({email , subject , message , duration = 0.25}) => {
     try {
@@ -10,9 +13,44 @@ const sendOtp = async ({email , subject , message , duration = 0.25}) => {
 
         // clears any existing record
         await OTP.deleteOne({email});
-
-
-    } catch (error) {
         
+        // generate a 4-digit otp
+        const generatedOtp = await generateOtp();
+
+        // mail options
+        const mailOptions = {
+            from : EMAIL_ADDRESS,
+            to:email,
+            subject,
+            html:`<p>${message}</p>
+            
+            <p style="color:red;font-size:30;letter-spacing:2px">
+                <b>
+                    ${generatedOtp}
+                <b/>
+            <p/>
+            
+            <p>
+                This code <b>expires in 15 minutes!<b/>.
+            <p/>`,
+        }
+        await sendEmail(mailOptions);
+
+        // saving the sent otp to mongo
+        const hashedOtp = await hashData(generatedOtp);
+        const newOtp = await new OTP({
+            email,
+            otp:hashedOtp,
+            createdAt : Date.now(),
+            expiresAt : Date.now() + 3600000*duration
+        });
+        const createdRecord = await newOtp.save();
+        return createdRecord;
+    } catch (error) {
+        throw error;
     }
 };
+
+module.exports = {sendOtp};
+
+

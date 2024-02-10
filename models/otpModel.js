@@ -14,4 +14,4 @@ otpSchema.method("toJSON", function() {
     return object;
   });
 
-module.exports = db.model('OTP', taskSchema);
+module.exports = db.model('OTP', otpSchema);
