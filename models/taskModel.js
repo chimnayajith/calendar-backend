@@ -3,7 +3,7 @@ const db = require('../config/dbConnection');
 
 const taskSchema = new mongoose.Schema({
     title : { type : String , required : true},
-    desciption : { type : String},
+    description : { type : String},
     date : { type : Date},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },   
 });
